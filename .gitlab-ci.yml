@@ -1,0 +1,18 @@
+image: python3.6
+
+before_script:
+      - apt-get -qq update
+      - apt-get install -y gdb
+      - pip install pytest pytest-cov
+      - pip install coveralls
+
+job1:
+      script:
+          - python setup.py install
+          - mkdir -p ~/.local/bin
+          - touch ~/.local/bin/afl-fuzz
+          - chmod +x ~/.local/bin/afl-fuzz
+          - export PATH=$PATH:~/.local/bin/
+          - coverage run setup.py test
+          - coverage report -m
+      coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
