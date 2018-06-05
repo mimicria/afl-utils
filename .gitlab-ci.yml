@@ -10,7 +10,7 @@ cache:
 
 before_script:
   - apt-get -qq update
-  - apt-get install -y gdb
+  - apt-get install -y gdb rsync
   - python -V
   - pip install virtualenv
   - virtualenv venv
