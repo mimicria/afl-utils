@@ -1,4 +1,4 @@
-# afl-utils [![Build Status](https://travis-ci.org/rc0r/afl-utils.svg?branch=master)](https://travis-ci.org/rc0r/afl-utils)[![Coverage Status](https://coveralls.io/repos/rc0r/afl-utils/badge.svg?branch=master&service=github)](https://coveralls.io/github/rc0r/afl-utils?branch=master)
+# afl-utils [![pipeline status](https://gitlab.com/rc0r/afl-utils/badges/master/pipeline.svg)](https://gitlab.com/rc0r/afl-utils/commits/master)[![coverage report](https://gitlab.com/rc0r/afl-utils/badges/master/coverage.svg)](https://gitlab.com/rc0r/afl-utils/commits/master)
 
 afl-utils is a collection of utilities to assist fuzzing with
 [american-fuzzy-lop (afl)](http://lcamtuf.coredump.cx/afl/).
