@@ -11,9 +11,9 @@ afl-utils includes tools for:
 * fuzzer queue synchronisation (`afl-sync`)
 * autonomous utility execution (`afl-cron`)
 
-Various [screenshots](#Screenshots) of the tools in action can be found at the end of this file.  
+Various [screenshots](#screenshots) of the tools in action can be found at the end of this file.
 
-**For installation instructions see [docs/INSTALL.md](https://github.com/rc0r/afl-utils/blob/master/docs/INSTALL.md).**
+**For installation instructions see [docs/INSTALL.md](https://gitlab.com/rc0r/afl-utils/blob/master/docs/INSTALL.md).**
 
 
 ## afl-collect
@@ -409,7 +409,7 @@ into all of your boxes to check `fuzzer_stats` quickly becomes a PITA...
 Additionally `afl-stats` may dump the current contents of `fuzzer_stats` into a database.
 So upon later inspection you have historical stats information in one place for analysis.
 For twitter setup instructions, please see
-[docs/INSTALL.md](https://github.com/rc0r/afl-utils/blob/master/docs/INSTALL.md)!
+[docs/INSTALL.md](https://gitlab.com/rc0r/afl-utils/blob/master/docs/INSTALL.md)!
 Screenshots of sample tweets can be found in the final section of this document.
 
 Usage example:
@@ -462,21 +462,21 @@ Usage example:
 
 Sample output:
 
-![afl-collect_sample](https://raw.githubusercontent.com/rc0r/afl-utils/master/.scrots/afl_collect_sample.png)
+![afl-collect_sample](https://gitlab.com/rc0r/afl-utils/raw/master/.scrots/afl_collect_sample.png)
 
 ### afl-sync
 
-![afl-sync_diagram](https://raw.githubusercontent.com/rc0r/afl-utils/master/.scrots/afl-sync-diagram.png)
+![afl-sync_diagram](https://gitlab.com/rc0r/afl-utils/raw/master/.scrots/afl-sync-diagram.png)
 
 ### afl-multicore
 
 Sample output (normal mode):
 
-![afl-multicore_sample](https://raw.githubusercontent.com/rc0r/afl-utils/master/.scrots/afl_multicore_sample.png)
+![afl-multicore_sample](https://gitlab.com/rc0r/afl-utils/raw/master/.scrots/afl_multicore_sample.png)
 
 ### afl-stats
 
-![afl-stats_sample](https://raw.githubusercontent.com/rc0r/afl-utils/master/.scrots/afl_stats_sample.png)
+![afl-stats_sample](https://gitlab.com/rc0r/afl-utils/raw/master/.scrots/afl_stats_sample.png)
 
-![afl-stats_tweet](https://raw.githubusercontent.com/rc0r/afl-utils/master/.scrots/afl_stats_tweet.png)
+![afl-stats_tweet](https://gitlab.com/rc0r/afl-utils/raw/master/.scrots/afl_stats_tweet.png)
 
