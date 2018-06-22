@@ -35,12 +35,24 @@ def show_info():
     print("")
 
 
+def convert_mem_limit(mem_limit):
+    if mem_limit is not None:
+        if mem_limit == "none":
+            return "none"
+        else:
+            try:
+                return int(mem_limit)
+            except ValueError as verr:
+                print_err("Converting mem-limit to int failed. Please use either \"none\" or a valid integer")
+                raise verr
+
+
 def invoke_cmin(input_dir, output_dir, target_cmd, mem_limit=None, timeout=None, qemu=False):
     success = True
     cmin_cmd = "afl-cmin "
 
     if mem_limit is not None:
-        cmin_cmd += "-m %d " % int(mem_limit)
+        cmin_cmd += "-m %s " % convert_mem_limit(mem_limit)
 
     if timeout is not None:
         cmin_cmd += "-t %d " % int(timeout)
@@ -78,7 +90,7 @@ def invoke_tmin(input_files, output_dir, target_cmd, num_threads=1, mem_limit=No
     tmin_cmd = "afl-tmin "
 
     if mem_limit is not None:
-        tmin_cmd += "-m %d " % int(mem_limit)
+        tmin_cmd += "-m %s " % convert_mem_limit(mem_limit)
 
     if timeout is not None:
         tmin_cmd += "-t %d " % int(timeout)
