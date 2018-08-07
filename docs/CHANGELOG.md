@@ -8,6 +8,9 @@ Version 1.34a
     Shastry).
   - Bug in afl_collect.py fixed that prevented other tools from starting
     if gdb executable is not present (reported by Henri Salo).
+  - Added support for `-m none` to `afl-minimize`. Thus an infinite memory
+    limit can be passed to `afl-cmin` and `afl-tmin`. (Contributed by
+    Vincent Ulitzsch.)
 
 Version 1.33a
 
