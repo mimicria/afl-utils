@@ -11,6 +11,8 @@ Version 1.34a
   - Added support for `-m none` to `afl-minimize`. Thus an infinite memory
     limit can be passed to `afl-cmin` and `afl-tmin`. (Contributed by
     Vincent Ulitzsch.)
+  - Fixed `afl-multicore` output to display master PID when using
+    non-interactive mode.
 
 Version 1.33a
 
