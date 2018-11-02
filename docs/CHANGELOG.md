@@ -13,6 +13,10 @@ Version 1.34a
     Vincent Ulitzsch.)
   - Fixed `afl-multicore` output to display master PID when using
     non-interactive mode.
+  - Timestamp field added to `afl-collect` crash sample database.
+    WARNING: This breaks compatibility with existing old database files
+    in a way that appending to old databases is no longer possible w/o
+    updating the database schema to include the timestamp field.
 
 Version 1.33a
 

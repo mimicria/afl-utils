@@ -26,6 +26,7 @@ import afl_utils
 from afl_utils import SampleIndex, AflThread
 from afl_utils.AflPrettyPrint import clr, print_ok, print_err, print_warn
 from db_connectors import con_sqlite
+import datetime
 
 # afl-collect global settings
 global_crash_subdirs = "crashes"
@@ -44,7 +45,7 @@ gdb_binary = shutil.which("gdb")
 
 # afl-collect database table spec
 db_table_spec = """`Sample` TEXT PRIMARY KEY NOT NULL, `Classification` TEXT NOT NULL,
-`Classification_Description` TEXT NOT NULL, `Hash` TEXT, `User_Comment` TEXT"""
+`Classification_Description` TEXT NOT NULL, `Hash` TEXT, `Timestamp` DATETIME NOT NULL, `User_Comment` TEXT"""
 
 
 def check_gdb():
@@ -145,7 +146,8 @@ def build_sample_index(sync_dir, out_dir, fuzzer_instances, db=None, min_filenam
 
                 if not db or not db.dataset_exists('Data', {'Sample': sample_name, 'Classification': '%',
                                                             'Classification_Description': '%',
-                                                            'Hash': '%', 'User_Comment': '%'}, ['Sample']):
+                                                            'Hash': '%', 'Timestamp': datetime.datetime.now(),
+                                                            'User_Comment': '%'}, ['Sample']):
                     sample_index.add(fuzzer[0], sample_file)
 
     return sample_index
@@ -310,7 +312,7 @@ def execute_gdb_script(out_dir, script_filename, num_samples, num_threads):
                                                   grepped_output[g+3], clr.RST, ccl, grepped_output[g+1], clr.RST))
         classification_data.append({'Sample': grepped_output[g], 'Classification': grepped_output[g+3],
                                     'Classification_Description': grepped_output[g+1], 'Hash': grepped_output[g+2],
-                                    'User_Comment': ''})
+                                    'Timestamp': datetime.datetime.now(), 'User_Comment': ''})
         i += 1
 
     if i > 1 and i < num_samples:
@@ -428,7 +430,7 @@ Use '@@' to specify crash sample input file position (see afl-fuzz usage).")
                 sample_name = sample_index.outputs(input_file=sample)
                 dataset = {'Sample': sample_name[0], 'Classification': 'INVALID',
                            'Classification_Description': 'Sample does not cause a crash in the target.', 'Hash': '',
-                           'User_Comment': ''}
+                           'Timestamp': datetime.datetime.now(), 'User_Comment': ''}
                 if not lite_db.dataset_exists('Data', dataset, ['Sample']):
                     lite_db.insert_dataset('Data', dataset)
 
@@ -436,7 +438,7 @@ Use '@@' to specify crash sample input file position (see afl-fuzz usage).")
                 sample_name = sample_index.outputs(input_file=sample)
                 dataset = {'Sample': sample_name[0], 'Classification': 'TIMEOUT',
                            'Classification_Description': 'Sample caused a target execution timeout.', 'Hash': '',
-                           'User_Comment': ''}
+                           'Timestamp': datetime.datetime.now(), 'User_Comment': ''}
                 if not lite_db.dataset_exists('Data', dataset, ['Sample']):
                     lite_db.insert_dataset('Data', dataset)
 
