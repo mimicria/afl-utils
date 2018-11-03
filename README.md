@@ -4,7 +4,7 @@ afl-utils is a collection of utilities to assist fuzzing with
 [american-fuzzy-lop (afl)](http://lcamtuf.coredump.cx/afl/).
 afl-utils includes tools for:
 
-* automated crash sample collection, verification, reduction and analysis (`afl-collect`, `afl-vcrash`)
+* automated crash sample collection, verification, reduction and analysis (`afl-triage`, `afl-vcrash`)
 * easy management of parallel (multi-core) fuzzing jobs (`afl-multicore`, `afl-multikill`)
 * corpus optimization (`afl-minimize`)
 * fuzzer stats supervision (`afl-stats`)
@@ -16,26 +16,26 @@ Various [screenshots](#screenshots) of the tools in action can be found at the e
 **For installation instructions see [docs/INSTALL.md](https://gitlab.com/rc0r/afl-utils/blob/master/docs/INSTALL.md).**
 
 
-## afl-collect
+## afl-triage
 
-`afl-collect` basically copies all crash sample files from an afl synchronisation directory
+`afl-triage` basically copies all crash sample files from an afl synchronisation directory
 (used by multiple afl instances when run in parallel) into a single location providing
-easy access for further crash analysis. Beyond that `afl-collect` has some more advanced
+easy access for further crash analysis. Beyond that `afl-triage` has some more advanced
 features like invalid crash sample removing (see `afl-vcrash`) as well as generating and
 executing `gdb` scripts that make use of [Exploitable](https://github.com/jfoote/exploitable).
 The purpose of these scripts is to automate crash sample classification (see screenshot below)
 and reduction.  
 Version 1.01a introduced crash sample de-duplication using backtrace hashes calculated by
-exploitable. To use this feature invoke `afl-collect` with `-e <gdb_script>` switch for
+exploitable. To use this feature invoke `afl-triage` with `-e <gdb_script>` switch for
 automatic gdb+exploitable script generation and execution. For each backtrace hash only a
 single crash sample file will be kept.  
-`afl-collect` is quite slow when operating on large sample sets and using gdb+exploitable
+`afl-triage` is quite slow when operating on large sample sets and using gdb+exploitable
 script execution, so be patient!  
 When invoked with `-d <database>`, sample information will be stored in the `database`. This
 will only be done when the gdb-script execution step is selected (`-e`). If `database` is an
-existing database containing sample info, `afl-collect` will skip all samples that already
+existing database containing sample info, `afl-triage` will skip all samples that already
 have a database entry during sample processing. This will work also when `-e` is not requested.
-This makes subsequent `afl-collect` runs more efficient, since only unseen samples are
+This makes subsequent `afl-triage` runs more efficient, since only unseen samples are
 processed (and added to the database).  
 
 Usage examples:
@@ -43,21 +43,24 @@ Usage examples:
 Simply collect all crashes from `./afl_sync_dir` into a collection directory removing
 non-crashing samples:
 
-    $ afl-collect -r ./afl_sync_dir ./collection_dir -- /path/to/target --target-opts
+    $ afl-triage -r ./afl_sync_dir ./collection_dir -- /path/to/target --target-opts
 
 Collect crashes, execute `exploitable` on them and remove uninteresting crashes. Info
 for all processed samples will be stored in an SQLite DB. The `gdb` script used to run
 `exploitable` on all samples will be saved in `gdb_script`. We're using eight threads
 here:
 
-    $ afl-collect -d crashes.db -e gdb_script -r -rr ./afl_sync_dir ./collection_dir \
+    $ afl-triage -d crashes.db -e gdb_script -r -rr ./afl_sync_dir ./collection_dir \
             -j 8 -- /path/to/target --target-opts
 
-During sample verification (enabled using `-r`) `afl-collect` uses a default time of
+During sample verification (enabled using `-r`) `afl-triage` uses a default time of
 10 seconds to allow the target process to finish processing a single sample. This ensures
-that `afl-collect` continues to run even if you happen to encounter some DoS condition
+that `afl-triage` continues to run even if you happen to encounter some DoS condition
 in the target. If you want to tweak this value use `-r` in conjunction with
 `-rt <timeout>` to specify the timeout in seconds.
+
+Note: Prior to version 1.35a `afl-triage` was called `afl-collect`. It was later renamed
+to better fit the purpose of the tool.
 
 ## afl-cron
 
@@ -444,7 +447,7 @@ Usage examples:
 
 `afl-vcrash` verifies that afl-fuzz crash samples really lead to crashes in the target
 binary and optionally removes these samples automatically.  
-Note: `afl-vcrash` functionality is incorporated into `afl-collect`. If `afl-collect` is
+Note: `afl-vcrash` functionality is incorporated into `afl-triage`. If `afl-triage` is
 invoked with switch `-r`, it runs `afl-vcrash -qr` to quietly remove invalid samples from
 the collected files.  
 To enable parallel crash sample verification provide `-j` followed by the desired number
@@ -458,11 +461,14 @@ Usage example:
 
 ## Screenshots
 
-### afl-collect
+### afl-triage
+
+Note: Prior to version 1.35a `afl-triage` was called `afl-collect`. It was later renamed
+to better fit the purpose of the tool.
 
 Sample output:
 
-![afl-collect_sample](https://gitlab.com/rc0r/afl-utils/raw/master/.scrots/afl_collect_sample.png)
+![afl-triage_sample](https://gitlab.com/rc0r/afl-utils/raw/master/.scrots/afl_collect_sample.png)
 
 ### afl-sync
 

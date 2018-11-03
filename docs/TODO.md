@@ -1,6 +1,6 @@
 # Feature Ideas / ToDo
 
-- [ ] implement configurable timeout for afl-collect, afl-minimize (like `-t` flag in `afl-vcrash`)
+- [ ] implement configurable timeout for afl-triage, afl-minimize (like `-t` flag in `afl-vcrash`)
 - [x] increase test coverage
 - [x] submit classification data into some sort of database
     - [x] basic sqlite3 database support added
