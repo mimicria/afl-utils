@@ -194,8 +194,12 @@ def generate_gdb_exploitable_script(script_filename, sample_index, target_cmd, s
 
     gdb_exploitable_path = None
     gdbinit = os.path.expanduser("~/.gdbinit")
-    if not os.path.exists(gdbinit) or b"exploitable.py" not in open(gdbinit, "rb").read():
+    if not os.path.exists(gdbinit):
         gdb_exploitable_path = os.path.join(exploitable.__path__[0], "exploitable.py")
+    else:
+        with open(gdbinit, "rb") as f:
+            if b"exploitable.py" not in f.read():
+                gdb_exploitable_path = os.path.join(exploitable.__path__[0], "exploitable.py")
 
     try:
         fd = open(script_filename, "w")

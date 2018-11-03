@@ -3,7 +3,7 @@ BIN_DIR=bin
 BIN=crash
 
 all:
-	mkdir $(BIN_DIR)
+	mkdir -p $(BIN_DIR)
 	$(CC) crash.c -o $(BIN_DIR)/$(BIN)
 
 clean:
