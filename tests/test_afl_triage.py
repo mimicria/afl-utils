@@ -1,4 +1,4 @@
-from afl_utils import afl_collect
+from afl_utils import afl_triage
 from afl_utils.SampleIndex import SampleIndex
 
 import os
@@ -7,7 +7,7 @@ import subprocess
 import unittest
 
 
-class AflCollectTestCase(unittest.TestCase):
+class AflTriageTestCase(unittest.TestCase):
     def setUp(self):
         # Use to set up test environment prior to test case
         # invocation
@@ -57,32 +57,32 @@ class AflCollectTestCase(unittest.TestCase):
             shutil.rmtree(dir)
 
     def test_show_info(self):
-        self.assertIsNone(afl_collect.show_info())
+        self.assertIsNone(afl_triage.show_info())
 
     def test_get_fuzzer_instances(self):
         fuzzer_inst = [
             ('fuzz000', ['crashes']),
             ('fuzz001', ['crashes'])
         ]
-        self.assertListEqual(fuzzer_inst, sorted(afl_collect.get_fuzzer_instances('testdata/sync')))
+        self.assertListEqual(fuzzer_inst, sorted(afl_triage.get_fuzzer_instances('testdata/sync')))
 
         fuzzer_inst = [
             (os.path.abspath('testdata/sync/fuzz000'), ['crashes'])
         ]
-        self.assertListEqual(fuzzer_inst, sorted(afl_collect.get_fuzzer_instances(('testdata/sync/fuzz000'))))
+        self.assertListEqual(fuzzer_inst, sorted(afl_triage.get_fuzzer_instances(('testdata/sync/fuzz000'))))
 
         fuzzer_inst = [
             ('fuzz000', ['queue']),
             ('fuzz001', ['queue'])
         ]
-        self.assertListEqual(fuzzer_inst, sorted(afl_collect.get_fuzzer_instances('testdata/sync',
-                                                                                  crash_dirs=False)))
+        self.assertListEqual(fuzzer_inst, sorted(afl_triage.get_fuzzer_instances('testdata/sync',
+                                                                                 crash_dirs=False)))
 
         fuzzer_inst = [
             (os.path.abspath('testdata/sync/fuzz000'), ['queue'])
         ]
-        self.assertListEqual(fuzzer_inst, sorted(afl_collect.get_fuzzer_instances(('testdata/sync/fuzz000'),
-                                                                                  crash_dirs=False)))
+        self.assertListEqual(fuzzer_inst, sorted(afl_triage.get_fuzzer_instances(('testdata/sync/fuzz000'),
+                                                                                 crash_dirs=False)))
 
     def test_get_crash_directories(self):
         fuzzer_inst = [
@@ -90,7 +90,7 @@ class AflCollectTestCase(unittest.TestCase):
             ('fuzz001', ['crashes'])
         ]
         sync_dir = os.path.abspath('testdata/sync')
-        self.assertListEqual(fuzzer_inst, sorted(afl_collect.get_crash_directories(sync_dir, fuzzer_inst)))
+        self.assertListEqual(fuzzer_inst, sorted(afl_triage.get_crash_directories(sync_dir, fuzzer_inst)))
 
     def test_get_queue_directories(self):
         fuzzer_inst = [
@@ -98,7 +98,7 @@ class AflCollectTestCase(unittest.TestCase):
             ('fuzz001', ['queue'])
         ]
         sync_dir = os.path.abspath('testdata/sync')
-        self.assertListEqual(fuzzer_inst, sorted(afl_collect.get_queue_directories(sync_dir, fuzzer_inst)))
+        self.assertListEqual(fuzzer_inst, sorted(afl_triage.get_queue_directories(sync_dir, fuzzer_inst)))
 
     def test_get_samples_from_dir(self):
         sample_dir = 'testdata/queue'
@@ -109,7 +109,7 @@ class AflCollectTestCase(unittest.TestCase):
             'sample3',
             'sample4'
         ])
-        result = afl_collect.get_samples_from_dir(sample_dir)
+        result = afl_triage.get_samples_from_dir(sample_dir)
         self.assertEqual(expected_result[0], result[0])
         self.assertListEqual(expected_result[1], sorted(result[1]))
 
@@ -120,7 +120,7 @@ class AflCollectTestCase(unittest.TestCase):
             os.path.join(sample_dir, 'sample3'),
             os.path.join(sample_dir, 'sample4'),
         ])
-        result = afl_collect.get_samples_from_dir(sample_dir, abs_path=True)
+        result = afl_triage.get_samples_from_dir(sample_dir, abs_path=True)
         self.assertEqual(expected_result[0], result[0])
         self.assertListEqual(expected_result[1], sorted(result[1]))
 
@@ -150,7 +150,7 @@ class AflCollectTestCase(unittest.TestCase):
                     ]
                  )])
         ])
-        result = afl_collect.collect_samples(sync_dir, fuzzer_inst)
+        result = afl_triage.collect_samples(sync_dir, fuzzer_inst)
         self.assertEqual(expected_result[0], result[0])
         self.assertListEqual(expected_result[1], sorted(result[1]))
 
@@ -183,7 +183,7 @@ class AflCollectTestCase(unittest.TestCase):
             {'input': os.path.abspath('testdata/sync/fuzz001/queue/sample4'), 'fuzzer': 'fuzz001',
              'output': 'fuzz001:sample4'},
         ]
-        result = afl_collect.build_sample_index(sync_dir, out_dir, fuzzer_inst)
+        result = afl_triage.build_sample_index(sync_dir, out_dir, fuzzer_inst)
         self.assertListEqual(expected_index, result.index)
 
     def test_copy_samples(self):
@@ -196,7 +196,7 @@ class AflCollectTestCase(unittest.TestCase):
         files_expected = [
             os.path.join(os.path.abspath(out_dir), index[0]['output'])
         ]
-        self.assertListEqual(files_expected, afl_collect.copy_samples(si))
+        self.assertListEqual(files_expected, afl_triage.copy_samples(si))
 
         ls_outdir = os.listdir(out_dir)
         self.assertListEqual([index[0]['output']], sorted(ls_outdir))
@@ -209,14 +209,14 @@ class AflCollectTestCase(unittest.TestCase):
             'dummy2'
         ]
         self.assertFalse(os.path.exists('testdata/read_only'))
-        self.assertIsNone(afl_collect.generate_sample_list(list_name, files_collected))
+        self.assertIsNone(afl_triage.generate_sample_list(list_name, files_collected))
         self.assertTrue(os.path.exists('testdata/read_only'))
 
-        self.assertIsNone(afl_collect.generate_sample_list('/invalid', files_collected))
+        self.assertIsNone(afl_triage.generate_sample_list('/invalid', files_collected))
 
     def test_stdin_mode(self):
-        self.assertTrue(afl_collect.stdin_mode('bla blubb stdin'))
-        self.assertFalse(afl_collect.stdin_mode('bla blubb @@'))
+        self.assertTrue(afl_triage.stdin_mode('bla blubb stdin'))
+        self.assertFalse(afl_triage.stdin_mode('bla blubb @@'))
 
     def test_generate_gdb_exploitable_script(self):
         script_filename = 'testdata/read_only_file'
@@ -226,57 +226,57 @@ class AflCollectTestCase(unittest.TestCase):
         ]
         si = SampleIndex('testdata/output', index)
 
-        self.assertIsNone(afl_collect.generate_gdb_exploitable_script(script_filename, si, 'bin/echo'))
+        self.assertIsNone(afl_triage.generate_gdb_exploitable_script(script_filename, si, 'bin/echo'))
 
         script_filename = 'testdata/gdb_script'
-        self.assertIsNone(afl_collect.generate_gdb_exploitable_script(script_filename, si, '/bin/echo',
-                                                                      intermediate=True))
+        self.assertIsNone(afl_triage.generate_gdb_exploitable_script(script_filename, si, '/bin/echo',
+                                                                     intermediate=True))
         self.assertTrue(os.path.exists('testdata/gdb_script.0'))
-        self.assertIsNone(afl_collect.generate_gdb_exploitable_script(script_filename, si, '/bin/echo'))
+        self.assertIsNone(afl_triage.generate_gdb_exploitable_script(script_filename, si, '/bin/echo'))
         self.assertTrue(os.path.exists('testdata/gdb_script'))
 
-        afl_collect.gdb_exploitable_path = 'test'
-        self.assertIsNone(afl_collect.generate_gdb_exploitable_script(script_filename, si, '/bin/echo'))
+        afl_triage.gdb_exploitable_path = 'test'
+        self.assertIsNone(afl_triage.generate_gdb_exploitable_script(script_filename, si, '/bin/echo'))
         self.assertTrue(os.path.exists('testdata/gdb_script'))
 
-        afl_collect.gdb_exploitable_path = None
-        self.assertIsNone(afl_collect.generate_gdb_exploitable_script(script_filename, si, '/bin/echo @@'))
+        afl_triage.gdb_exploitable_path = None
+        self.assertIsNone(afl_triage.generate_gdb_exploitable_script(script_filename, si, '/bin/echo @@'))
         self.assertTrue(os.path.exists('testdata/gdb_script'))
 
     def test_execute_gdb_script(self):
         pass
 
     def test_main(self):
-        argv = ['afl-collect', '-h']
+        argv = ['afl-triage', '-h']
         with self.assertRaises(SystemExit):
-            self.assertIsNone(afl_collect.main(argv))
+            self.assertIsNone(afl_triage.main(argv))
 
-        argv = ['afl-collect', 'testdata/invalid_sync_dir', 'testdata/test_collection_dir', '--', 'testdata/invalid']
-        self.assertIsNone(afl_collect.main(argv))
+        argv = ['afl-triage', 'testdata/invalid_sync_dir', 'testdata/test_collection_dir', '--', 'testdata/invalid']
+        self.assertIsNone(afl_triage.main(argv))
 
-        argv = ['afl-collect', 'testdata/sync', 'testdata/test_collection_dir', '--', 'testdata/invalid']
-        self.assertIsNone(afl_collect.main(argv))
+        argv = ['afl-triage', 'testdata/sync', 'testdata/test_collection_dir', '--', 'testdata/invalid']
+        self.assertIsNone(afl_triage.main(argv))
 
-        argv = ['afl-collect', 'testdata/sync', 'testdata/test_collection_dir', '--', '/bin/echo']
-        self.assertIsNone(afl_collect.main(argv))
+        argv = ['afl-triage', 'testdata/sync', 'testdata/test_collection_dir', '--', '/bin/echo']
+        self.assertIsNone(afl_triage.main(argv))
 
         self.assertFalse(os.path.exists('testdata/dbfile.db'))
-        argv = ['afl-collect', '-d', 'testdata/dbfile.db', 'testdata/sync', 'testdata/test_collection_dir', '--', '/bin/echo']
-        self.assertIsNone(afl_collect.main(argv))
+        argv = ['afl-triage', '-d', 'testdata/dbfile.db', 'testdata/sync', 'testdata/test_collection_dir', '--', '/bin/echo']
+        self.assertIsNone(afl_triage.main(argv))
         self.assertTrue(os.path.exists('testdata/dbfile.db'))
 
         self.init_crash_dir('testdata/sync/fuzz000/crashes')
         self.init_crash_dir('testdata/sync/fuzz001/crashes')
-        argv = ['afl-collect', 'testdata/sync', 'testdata/test_collection_dir', '--', '/bin/echo']
-        self.assertIsNone(afl_collect.main(argv))
+        argv = ['afl-triage', 'testdata/sync', 'testdata/test_collection_dir', '--', '/bin/echo']
+        self.assertIsNone(afl_triage.main(argv))
 
-        argv = ['afl-collect', '-r', 'testdata/sync', 'testdata/test_collection_dir', '--', '/bin/echo']
-        self.assertIsNone(afl_collect.main(argv))
+        argv = ['afl-triage', '-r', 'testdata/sync', 'testdata/test_collection_dir', '--', '/bin/echo']
+        self.assertIsNone(afl_triage.main(argv))
 
-        argv = ['afl-collect', '-d', 'testdata/dbfile.db', '-e', 'gdbscript', '-r', '-rr', 'testdata/sync',
+        argv = ['afl-triage', '-d', 'testdata/dbfile.db', '-e', 'gdbscript', '-r', '-rr', 'testdata/sync',
                'testdata/test_collection_dir', '--', 'testdata/crash_process/bin/crash']
-        self.assertIsNone(afl_collect.main(argv))
+        self.assertIsNone(afl_triage.main(argv))
 
-        argv = ['afl-collect', '-g', 'gdbscript', '-f', 'testdata/read_only', 'testdata/sync',
+        argv = ['afl-triage', '-g', 'gdbscript', '-f', 'testdata/read_only', 'testdata/sync',
                 'testdata/test_collection_dir', '--', '/bin/echo']
-        self.assertIsNone(afl_collect.main(argv))
+        self.assertIsNone(afl_triage.main(argv))

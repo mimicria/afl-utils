@@ -17,6 +17,6 @@ limitations under the License.
 """
 
 import sys
-from afl_utils import afl_collect
+from afl_utils import afl_triage
 
-afl_collect.main(sys.argv)
+afl_triage.main(sys.argv)

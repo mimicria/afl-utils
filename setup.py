@@ -30,7 +30,7 @@ dependency_links = [
 ]
 
 afl_scripts = [
-    'afl-collect',
+    'afl-triage',
     'afl-cron',
     'afl-minimize',
     'afl-multicore',

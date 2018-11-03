@@ -28,7 +28,7 @@ from afl_utils.AflPrettyPrint import clr, print_ok, print_err, print_warn
 from db_connectors import con_sqlite
 import datetime
 
-# afl-collect global settings
+# afl-triage global settings
 global_crash_subdirs = "crashes"
 global_queue_subdirs = "queue"
 global_exclude_files = [
@@ -43,7 +43,7 @@ fuzzer_stats_filename = "fuzzer_stats"
 gdb_binary = shutil.which("gdb")
 
 
-# afl-collect database table spec
+# afl-triage database table spec
 db_table_spec = """`Sample` TEXT PRIMARY KEY NOT NULL, `Classification` TEXT NOT NULL,
 `Classification_Description` TEXT NOT NULL, `Hash` TEXT, `Timestamp` DATETIME NOT NULL, `User_Comment` TEXT"""
 
@@ -55,7 +55,7 @@ def check_gdb():
 
 
 def show_info():
-    print(clr.CYA + "afl-collect " + clr.BRI + "%s" % afl_utils.__version__ + clr.RST + " by %s" % afl_utils.__author__)
+    print(clr.CYA + "afl-triage " + clr.BRI + "%s" % afl_utils.__version__ + clr.RST + " by %s" % afl_utils.__author__)
     print("Crash sample collection and processing utility for afl-fuzz.")
     print("")
 
@@ -333,16 +333,16 @@ def main(argv):
     show_info()
     check_gdb()
 
-    parser = argparse.ArgumentParser(description="afl-collect copies all crash sample files from an afl sync dir used \
+    parser = argparse.ArgumentParser(description="afl-triage copies all crash sample files from an afl sync dir used \
 by multiple fuzzers when fuzzing in parallel into a single location providing easy access for further crash analysis.",
-                                     usage="afl-collect [-d DATABASE] [-e|-g GDB_EXPL_SCRIPT_FILE] [-f LIST_FILENAME]\n \
+                                     usage="afl-triage [-d DATABASE] [-e|-g GDB_EXPL_SCRIPT_FILE] [-f LIST_FILENAME]\n \
 [-h] [-j THREADS] [-m] [-r [-rt TIMEOUT]] [-rr] sync_dir collection_dir -- target_cmd")
     parser.add_argument("sync_dir", help="afl synchronisation directory crash samples will be collected from.")
     parser.add_argument("collection_dir",
                         help="Output directory that will hold a copy of all crash samples and other generated files. \
 Existing files in the collection directory will be overwritten!")
     parser.add_argument("-d", "--database", dest="database_file", help="Submit sample data into an sqlite3 database (\
-only when used together with '-e'). afl-collect skips processing of samples already found in existing database.",
+only when used together with '-e'). afl-triage skips processing of samples already found in existing database.",
                         default=None)
     parser.add_argument("-e", "--execute-gdb-script", dest="gdb_expl_script_file",
                         help="Generate and execute a gdb+exploitable script after crash sample collection for crash \
@@ -354,7 +354,7 @@ classification. (Like option '-g', plus script execution.)",
                         help="Generate gdb script to run 'exploitable.py' on all collected crash samples. Generated \
 script will be placed into collection directory.", default=None)
     parser.add_argument("-j", "--threads", dest="num_threads", default=1,
-                        help="Enable parallel analysis by specifying the number of threads afl-collect will utilize.")
+                        help="Enable parallel analysis by specifying the number of threads afl-triage will utilize.")
     parser.add_argument("-m", "--minimize-filenames", dest="min_filename", action="store_const", const=True,
                         default=False, help="Minimize crash sample file names by only keeping fuzzer name and ID.")
     parser.add_argument("-r", "--remove-invalid", dest="remove_invalid", action="store_const", const=True,

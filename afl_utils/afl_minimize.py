@@ -24,7 +24,7 @@ import time
 import queue
 
 import afl_utils
-from afl_utils import afl_collect, afl_vcrash, AflThread
+from afl_utils import afl_triage, afl_vcrash, AflThread
 from afl_utils.AflPrettyPrint import clr, print_ok, print_warn, print_err
 
 
@@ -156,7 +156,7 @@ def invoke_dryrun(input_files, crash_dir, timeout_dir, target_cmd, timeout=60, n
 
 
 def afl_reseed(sync_dir, coll_dir):
-    fuzzer_queues = afl_collect.get_fuzzer_instances(sync_dir, crash_dirs=False)
+    fuzzer_queues = afl_triage.get_fuzzer_instances(sync_dir, crash_dirs=False)
 
     for fuzzer in fuzzer_queues:
         # move original fuzzer queues out of the way
@@ -248,15 +248,15 @@ Use '@@' to specify crash sample input file position (see afl-fuzz usage).")
             os.makedirs(out_dir, exist_ok=True)
 
             print_ok("Looking for fuzzing queues in '%s'." % sync_dir)
-            fuzzers = afl_collect.get_fuzzer_instances(sync_dir, crash_dirs=False)
+            fuzzers = afl_triage.get_fuzzer_instances(sync_dir, crash_dirs=False)
 
             # collect samples from fuzzer queues
             print_ok("Found %d fuzzers, collecting samples." % len(fuzzers))
-            sample_index = afl_collect.build_sample_index(sync_dir, out_dir, fuzzers, omit_fuzzer_name=True)
+            sample_index = afl_triage.build_sample_index(sync_dir, out_dir, fuzzers, omit_fuzzer_name=True)
 
             print_ok("Successfully indexed %d samples." % len(sample_index.index))
             print_ok("Copying %d samples into collection directory..." % len(sample_index.index))
-            afl_collect.copy_samples(sample_index)
+            afl_triage.copy_samples(sample_index)
         else:
             print_warn("Collection directory exists and is not empty!")
             print_warn("Skipping collection step...")
@@ -267,12 +267,12 @@ Use '@@' to specify crash sample input file position (see afl-fuzz usage).")
                         timeout=args.cmin_timeout, qemu=args.cmin_qemu)
             if args.invoke_tmin:
                 # invoke tmin on minimized collection
-                tmin_num_samples, tmin_samples = afl_collect.get_samples_from_dir("%s.cmin" % out_dir, abs_path=True)
+                tmin_num_samples, tmin_samples = afl_triage.get_samples_from_dir("%s.cmin" % out_dir, abs_path=True)
                 invoke_tmin(tmin_samples, "%s.cmin.tmin" % out_dir, args.target_cmd, num_threads=threads,
                             mem_limit=args.tmin_mem_limit, timeout=args.tmin_timeout, qemu=args.tmin_qemu)
         elif args.invoke_tmin:
             # invoke tmin on collection
-            tmin_num_samples, tmin_samples = afl_collect.get_samples_from_dir(out_dir, abs_path=True)
+            tmin_num_samples, tmin_samples = afl_triage.get_samples_from_dir(out_dir, abs_path=True)
             invoke_tmin(tmin_samples, "%s.tmin" % out_dir, args.target_cmd, num_threads=threads,
                         mem_limit=args.tmin_mem_limit, timeout=args.tmin_timeout, qemu=args.tmin_qemu)
         if args.dry_run:
@@ -280,28 +280,28 @@ Use '@@' to specify crash sample input file position (see afl-fuzz usage).")
             if args.invoke_cmin and args.invoke_tmin:
                 print_ok("Performing dry-run in %s.cmin.tmin..." % out_dir)
                 print_warn("Be patient! Depending on the corpus size this step can take hours...")
-                dryrun_num_samples, dryrun_samples = afl_collect.get_samples_from_dir("%s.cmin.tmin" % out_dir,
-                                                                                      abs_path=True)
+                dryrun_num_samples, dryrun_samples = afl_triage.get_samples_from_dir("%s.cmin.tmin" % out_dir,
+                                                                                     abs_path=True)
                 invoke_dryrun(dryrun_samples, "%s.cmin.tmin.crashes" % out_dir, "%s.cmin.tmin.hangs" % out_dir,
                               args.target_cmd, num_threads=threads)
             elif args.invoke_cmin:
                 print_ok("Performing dry-run in %s.cmin..." % out_dir)
                 print_warn("Be patient! Depending on the corpus size this step can take hours...")
-                dryrun_num_samples, dryrun_samples = afl_collect.get_samples_from_dir("%s.cmin" % out_dir,
-                                                                                      abs_path=True)
+                dryrun_num_samples, dryrun_samples = afl_triage.get_samples_from_dir("%s.cmin" % out_dir,
+                                                                                     abs_path=True)
                 invoke_dryrun(dryrun_samples, "%s.cmin.crashes" % out_dir, "%s.cmin.hangs" % out_dir, args.target_cmd,
                               num_threads=threads)
             elif args.invoke_tmin:
                 print_ok("Performing dry-run in %s.tmin..." % out_dir)
                 print_warn("Be patient! Depending on the corpus size this step can take hours...")
-                dryrun_num_samples, dryrun_samples = afl_collect.get_samples_from_dir("%s.tmin" % out_dir,
-                                                                                      abs_path=True)
+                dryrun_num_samples, dryrun_samples = afl_triage.get_samples_from_dir("%s.tmin" % out_dir,
+                                                                                     abs_path=True)
                 invoke_dryrun(dryrun_samples, "%s.tmin.crashes" % out_dir, "%s.tmin.hangs" % out_dir, args.target_cmd,
                               num_threads=threads)
             else:
                 print_ok("Performing dry-run in %s..." % out_dir)
                 print_warn("Be patient! Depending on the corpus size this step can take hours...")
-                dryrun_num_samples, dryrun_samples = afl_collect.get_samples_from_dir(out_dir, abs_path=True)
+                dryrun_num_samples, dryrun_samples = afl_triage.get_samples_from_dir(out_dir, abs_path=True)
                 invoke_dryrun(dryrun_samples, "%s.crashes" % out_dir, "%s.hangs" % out_dir, args.target_cmd,
                               num_threads=threads)
         elif args.reseed:
@@ -317,7 +317,7 @@ Use '@@' to specify crash sample input file position (see afl-fuzz usage).")
     else:
         if args.dry_run:
             print_ok("Looking for fuzzing queues in '%s'." % sync_dir)
-            fuzzers = afl_collect.get_fuzzer_instances(sync_dir, crash_dirs=False)
+            fuzzers = afl_triage.get_fuzzer_instances(sync_dir, crash_dirs=False)
             print_ok("Found %d fuzzers, performing dry run." % len(fuzzers))
             print_warn("Be patient! Depending on the corpus size this step can take hours...")
             # invoke dry-run on original corpus
@@ -326,7 +326,7 @@ Use '@@' to specify crash sample input file position (see afl-fuzz usage).")
                     q_dir_complete = os.path.join(sync_dir, f[0], q_dir)
                     print_ok("Processing %s..." % q_dir_complete)
 
-                    dryrun_num_samples, dryrun_samples = afl_collect.get_samples_from_dir(q_dir_complete, abs_path=True)
+                    dryrun_num_samples, dryrun_samples = afl_triage.get_samples_from_dir(q_dir_complete, abs_path=True)
                     invoke_dryrun(dryrun_samples, os.path.join(sync_dir, f[0], "crashes"),
                                   os.path.join(sync_dir, f[0], "hangs"), args.target_cmd, num_threads=threads)
 

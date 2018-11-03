@@ -21,7 +21,7 @@ import sys
 import threading
 
 import afl_utils
-from afl_utils import AflThread, afl_collect
+from afl_utils import AflThread, afl_triage
 from afl_utils.AflPrettyPrint import *
 
 def show_info():
@@ -120,7 +120,7 @@ particularly useful when combined with '-r' or '-f'.")
         print_err("No valid directory provided for <collection_dir>!")
         sys.exit(1)
 
-    num_crashes, crash_samples = afl_collect.get_samples_from_dir(input_dir, True)
+    num_crashes, crash_samples = afl_triage.get_samples_from_dir(input_dir, True)
 
     print_ok("Verifying %d crash samples..." % num_crashes)
 
@@ -142,7 +142,7 @@ particularly useful when combined with '-r' or '-f'.")
 
     # generate filelist of collected crash samples
     if args.list_filename:
-        afl_collect.generate_sample_list(args.list_filename, invalid_samples + timeout_samples)
+        afl_triage.generate_sample_list(args.list_filename, invalid_samples + timeout_samples)
         print_ok("Generated invalid crash sample list '%s'." % args.list_filename)
 
 
