@@ -7,10 +7,10 @@ following list to get advice on how to workaround these issues!
   hard and needs improvements!
 * Tool outputs might get cluttered if core dumps/kernel crash/libc messages are displayed on
   your terminal (see `man core(5)`; workaround anybody?).
-  **Hint:** Redirect `stdout` of `afl-collect`/`afl-vcrash` to some file to afterwards check
+  **Hint:** Redirect `stdout` of `afl-triage`/`afl-vcrash` to some file to afterwards check
   their outputs!
 * ~~gdb+exploitable script execution will be interrupted when using samples that do not lead
-  to actual crashes. `afl-collect` will print the files name causing the trouble (for manual
+  to actual crashes. `afl-triage` will print the files name causing the trouble (for manual
   removal).~~ Fixed by using a patched `exploitable.py` that handles `NoThreadRunningError`
   (see [Exploitable](https://gitlab.com/rc0r/exploitable)). **Be sure to use the patched
   version of `exploitable.py`!**

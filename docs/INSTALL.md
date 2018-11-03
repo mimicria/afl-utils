@@ -69,7 +69,7 @@ This will also fetch and install Python `twitter` and `exploitable` packages int
 your Python environment.
 **Attention:** Make sure you source `exploitable.py` in your `~/.gdbinit` file as
 inidicated by the `exploitable` installer! Otherwise `gdb` won't recognize
-`exploitable` and the advanced features of `afl-collect` are not going to work
+`exploitable` and the advanced features of `afl-triage` are not going to work
 properly!
 
 If you like, you can run tests with:
@@ -79,7 +79,7 @@ If you like, you can run tests with:
 However, running tests is optional, but might be a good idea when installing
 experimental builds. Now you're good to start:
 
-    $ afl-collect --help
+    $ afl-triage --help
 
 
 ## afl-stats setup

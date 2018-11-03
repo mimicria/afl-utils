@@ -174,6 +174,7 @@ def generate_sample_list(list_filename, files_collected):
     except (FileExistsError, PermissionError):
         print_err("Could not create file list '%s'!" % list_filename)
 
+
 def stdin_mode(target_cmd):
     return not ("@@" in target_cmd)
 
