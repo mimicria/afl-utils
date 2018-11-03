@@ -6,7 +6,7 @@ afl-utils includes tools for:
 
 * automated crash sample collection, verification, reduction and analysis (`afl-triage`, `afl-vcrash`)
 * easy management of parallel (multi-core) fuzzing jobs (`afl-multicore`, `afl-multikill`)
-* corpus optimization (`afl-minimize`)
+* automated corpus collection and optimization (`afl-collect`)
 * fuzzer stats supervision (`afl-stats`)
 * fuzzer queue synchronisation (`afl-sync`)
 * autonomous utility execution (`afl-cron`)
@@ -92,7 +92,7 @@ You may have multiple job definitions in your configuration. Once the interval t
 all jobs are executed sequentially.
 
 
-## afl-minimize
+## afl-collect
 
 Helps to create a minimized corpus from samples of a parallel fuzzing job. It
 basically works as follows:
@@ -112,7 +112,7 @@ basically works as follows:
    
 As already indicated, all these steps are optional, making the tool quite flexible. E.g.
 running only step four can be handy before resuming a parallel fuzzing session. In order
-to skip step one, simply provide a directory containing fuzzing samples. Then `afl-minimize`
+to skip step one, simply provide a directory containing fuzzing samples. Then `afl-collect`
 will not collect any samples, instead `afl-cmin` and/or `afl-tmin` are run on the samples
 in the provided directory.  
 
@@ -129,29 +129,31 @@ corpus from crashes with a 100% success rate!
 Brandon Perry described a common fuzzing workflow in his
 [blog post](http://foxglovesecurity.com/2016/03/15/fuzzing-workflows-a-fuzz-job-from-start-to-finish/).
 It incorporates corpus pruning and reseeding `afl-fuzz` with optimized corpora. The
-collection and minimization steps taken in `afl-minimize` automate the pruning process
+collection and minimization steps taken in `afl-collect` automate the pruning process
 of the presented workflow. To feed the minimized, pruned corpus back into the different
-instances of `afl-fuzz` you may use the `--reseed` option that comes with `afl-minimize`.  
+instances of `afl-fuzz` you may use the `--reseed` option that comes with `afl-collect`.  
 This effectively moves the original `queue` directories of all fuzzing instances
 out of the way (to `queue.YYYY-MM-DD-HH:MM:SS`). Next, the optimized corpus is copied
 into the `queue` dirs of your fuzzing instances.  
 After reseeding, all fuzzing instances may be resumed on the same, optimized corpus.
 So with `afl-utils` the pruning/reseeding process is just a matter of `afl-multicore`ing,
-`afl-multikill`ing and `afl-minimize`ing.
+`afl-multikill`ing and `afl-collect`ing.
 
 Usage examples:
 
 Minimize the entire corpus of all fuzzers in `./afl_sync_dir` using `afl-cmin` and
 `afl-cmin` utilizing eight threads:
 
-    $ afl-minimize -c new_corpus --cmin --cmin-mem-limit=500 --tmin --tmin-mem-limit=500 \
+    $ afl-collect -c new_corpus --cmin --cmin-mem-limit=500 --tmin --tmin-mem-limit=500 \
                 -j 8 ./afl_sync_dir -- /path/to/target --target-opts
 
 Minimize the entire corpus using `afl-cmin` and reseed the fuzzers:
 
-    $ afl-minimize -c new_corpus --cmin --cmin-mem-limit=500 --reseed ./afl_sync_dir \
+    $ afl-collect -c new_corpus --cmin --cmin-mem-limit=500 --reseed ./afl_sync_dir \
                 -- /path/to/target --target-opts
 
+Note: Prior to version 1.35a `afl-collect` was called `afl-minimize`. It was later renamed
+to better fit the purpose of the tool.
 
 ## afl-multicore
 

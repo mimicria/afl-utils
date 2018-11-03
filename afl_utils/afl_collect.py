@@ -29,7 +29,7 @@ from afl_utils.AflPrettyPrint import clr, print_ok, print_warn, print_err
 
 
 def show_info():
-    print(clr.CYA + "afl-minimize " + clr.BRI + "%s" % afl_utils.__version__ + clr.RST + " by %s" %
+    print(clr.CYA + "afl-collect " + clr.BRI + "%s" % afl_utils.__version__ + clr.RST + " by %s" %
           afl_utils.__author__)
     print("Corpus minimization utility for afl-fuzz corpora.")
     print("")
@@ -187,9 +187,9 @@ def afl_reseed(sync_dir, coll_dir):
 def main(argv):
     show_info()
 
-    parser = argparse.ArgumentParser(description="afl-minimize performs several optimization steps to reduce the size\n \
+    parser = argparse.ArgumentParser(description="afl-collect performs several optimization steps to reduce the size\n \
 of an afl-fuzz corpus.",
-                                     usage="afl-minimize [-c COLLECTION_DIR [--cmin [opts]] [--tmin [opts]]] [--reseed]\n \
+                                     usage="afl-collect [-c COLLECTION_DIR [--cmin [opts]] [--tmin [opts]]] [--reseed]\n \
                    [-d] [-h] [-j] sync_dir -- target_cmd\n")
 
     parser.add_argument("-c", "--collect", dest="collection_dir",
@@ -215,7 +215,7 @@ or on unoptimized collection dir otherwise. Has no effect without '-c'.")
 synchronisation dir otherwise. Dry-run will move intermittent crashes out of the corpus.")
     parser.add_argument("-j", "--threads", dest="num_threads", default=1,
                         help="Enable parallel dry-run and t-minimization step by specifying the number of threads \
-afl-minimize will utilize.")
+afl-collect will utilize.")
     parser.add_argument("sync_dir", help="afl synchronisation directory containing multiple fuzzers and their queues.")
     parser.add_argument("target_cmd", nargs="+", help="Path to the target binary and its command line arguments. \
 Use '@@' to specify crash sample input file position (see afl-fuzz usage).")

@@ -12,6 +12,7 @@ Version 1.35a
   - Updated `afl-sync` to not use the `-c` flag when invoking `rsync` to
     avoid hashing of large corpora. (Proposed by Denis Kasak.)
   - Renamed `afl-collect` to `afl-triage`.
+  - Renamed `afl-minimize` to `afl-collect`.
 
 Version 1.34a
 

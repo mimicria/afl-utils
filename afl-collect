@@ -17,6 +17,6 @@ limitations under the License.
 """
 
 import sys
-from afl_utils import afl_minimize
+from afl_utils import afl_collect
 
-afl_minimize.main(sys.argv)
+afl_collect.main(sys.argv)

@@ -30,13 +30,13 @@ dependency_links = [
 ]
 
 afl_scripts = [
-    'afl-triage',
+    'afl-collect',
     'afl-cron',
-    'afl-minimize',
     'afl-multicore',
     'afl-multikill',
     'afl-stats',
     'afl-sync',
+    'afl-triage',
     'afl-vcrash'
 ]
 
