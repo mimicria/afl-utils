@@ -346,6 +346,10 @@ job offset that allows to resume specific (ranges of) afl-instances.")
             setup_screen(jobs_count, conf_settings["environment"])
         else:
             setup_screen(jobs_count, [])
+    elif "environment" in conf_settings:
+        for env in conf_settings["environment"]:
+            k, v = env.split("=")
+            os.environ[k] = v
 
     target_cmd = build_target_cmd(conf_settings)
 

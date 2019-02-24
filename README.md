@@ -382,7 +382,7 @@ screen window. Run `afl-multicore` from inside screen!
 "interactive": true
 ```
 
-Environment variables `afl-multicore` will set when using interactive screen mode.
+Environment variables `afl-multicore` will set.
 
 ```json
 "environment": [
