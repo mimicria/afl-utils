@@ -85,7 +85,7 @@ test_afl_cmdline21 = [
 ]
 
 test_afl_cmdline3 = [
-    os.path.abspath(os.path.expanduser('~/.local/bin/afl-fuzz')), '-f', 'sample_file_027', '-t', '200+', '-m', '150', '-Q', '-d', '-n', '-x', 'dict/target.dict',
+    os.path.abspath(os.path.expanduser('~/.local/bin/afl-fuzz')), '-f', '027_sample_file', '-t', '200+', '-m', '150', '-Q', '-d', '-n', '-x', 'dict/target.dict',
     '-T banner', '-i', './in', '-o', './out'
 ]
 
@@ -233,7 +233,7 @@ class AflMulticoreTestCase(unittest.TestCase):
             'file': 'cur_input'
         }
         target_cmd = 'testdata/dummy_process/invalid_proc --some-opt %%'
-        expected_master_cmd = os.path.abspath(os.path.expanduser('~/.local/bin/afl-fuzz')) + ' -f cur_input_000 -M SESSION000 -- ' + target_cmd.replace('%%', conf_settings['file']+'_000')
+        expected_master_cmd = os.path.abspath(os.path.expanduser('~/.local/bin/afl-fuzz')) + ' -f 000_cur_input -M SESSION000 -- ' + target_cmd.replace('%%', '000_' + conf_settings['file'])
         master_cmd = afl_multicore.build_master_cmd(conf_settings, 0, target_cmd)
 
         self.assertEqual(expected_master_cmd, master_cmd)
@@ -262,7 +262,7 @@ class AflMulticoreTestCase(unittest.TestCase):
         }
         target_cmd = 'testdata/dummy_process/invalid_proc --some-opt %%'
         slave_num = 3
-        slave_cmd = os.path.abspath(os.path.expanduser('~/.local/bin/afl-fuzz')) + ' -f cur_input_003 -S SESSION003 -- ' + target_cmd.replace("%%", conf_settings['file']+'_003')
+        slave_cmd = os.path.abspath(os.path.expanduser('~/.local/bin/afl-fuzz')) + ' -f 003_cur_input -S SESSION003 -- ' + target_cmd.replace("%%", '003_'+conf_settings['file'])
 
         self.assertEqual(slave_cmd, afl_multicore.build_slave_cmd(conf_settings, slave_num, target_cmd))
 
