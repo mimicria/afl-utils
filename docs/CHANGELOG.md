@@ -1,5 +1,12 @@
 # afl-utils Changelog
 
+Version 1.35a
+
+  - Changed `afl-multicore` to prefix filenames with their respective job number
+  handed over to `afl-fuzz`'s `-f` switch. Previously the job number was simply
+  appended causing trouble for some fuzzing targets.
+  (Contributed by Krishna Ram Prakash R and @pwd.)
+
 Version 1.34a
 
   - Added `--chmod`, `--chown` rsync flags to afl-sync (contributed by
