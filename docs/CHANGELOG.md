@@ -6,6 +6,9 @@ Version 1.35a
     number handed over to `afl-fuzz`'s `-f` switch. Previously the job
     number was simply appended causing trouble for some fuzzing targets.
     (Contributed by Krishna Ram Prakash R and @YourButterfly.)
+  - Changed `afl-multicore` to also set environment variables specified in the
+    `afl-multicore` configuration file in case non-interactive mode is used.
+    (Contributed by Philipp Bartsch.)
   - Updated `afl-sync` to not use the `-c` flag when invoking `rsync` to
     avoid hashing of large corpora. (Proposed by Denis Kasak.)
 
