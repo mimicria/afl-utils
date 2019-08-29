@@ -22,7 +22,8 @@ import subprocess
 import afl_utils
 from afl_utils.AflPrettyPrint import clr, print_ok, print_warn, print_err
 
-_rsync_default_options = ['-racz']
+_rsync_default_options = ['-raz']
+
 
 class AflBaseSync(object):
     def __init__(self, server_config, fuzzer_config):
