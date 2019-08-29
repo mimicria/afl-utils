@@ -246,8 +246,8 @@ class AflMulticoreTestCase(unittest.TestCase):
         }
         target_cmd = 'testdata/dummy_process/invalid_proc --some-opt %%'
         expected_master_cmd = os.path.abspath(
-            os.path.expanduser('~/.local/bin/afl-fuzz')) + ' -f cur_input_001 -M SESSION001:2/3 -- ' + target_cmd.replace(
-            '%%', conf_settings['file'] + '_001')
+            os.path.expanduser('~/.local/bin/afl-fuzz')) + ' -f 001_cur_input -M SESSION001:2/3 -- ' + target_cmd.replace(
+            '%%', '001_' + conf_settings['file'])
         master_cmd = afl_multicore.build_master_cmd(conf_settings, 1, target_cmd)
 
         self.assertEqual(expected_master_cmd, master_cmd)
