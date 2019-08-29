@@ -1,5 +1,5 @@
 """
-Copyright 2015-2018 @_rc0r <hlt99@blinkenshell.org>
+Copyright 2015-2019 @_rc0r <hlt99@blinkenshell.org>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ def afl_cmdline_from_config(config_settings, instance_number):
     if "file" in config_settings:
         afl_cmdline.append("-f")
         if config_settings["file"] != "@@":
-            afl_cmdline.append(config_settings["file"] + "_%03d" % instance_number)
+            afl_cmdline.append("%03d_" % instance_number + config_settings["file"])
         else:
             afl_cmdline.append(config_settings["file"])
 
@@ -176,7 +176,7 @@ def build_master_cmd(conf_settings, master_index, target_cmd):
     # If afl -f file switch was used, automatically use correct input
     # file for master instance.
     if "%%" in target_cmd:
-        target_cmd = target_cmd.replace("%%", conf_settings["file"] + "_%03d" % master_index)
+        target_cmd = target_cmd.replace("%%", "%03d_" % master_index + conf_settings["file"])
     # compile command-line for master
     # $ afl-fuzz -i <input_dir> -o <output_dir> -M <session_name>.000 <afl_args> \
     #   </path/to/target.bin> <target_args>
@@ -195,7 +195,7 @@ def build_slave_cmd(conf_settings, slave_index, target_cmd):
     # If afl -f file switch was used, automatically use correct input
     # file for slave instance.
     if "%%" in target_cmd:
-        target_cmd = target_cmd.replace("%%", conf_settings["file"] + "_%03d" % slave_index)
+        target_cmd = target_cmd.replace("%%",  "%03d_" % slave_index + conf_settings["file"])
     # compile command-line for slaves
     # $ afl-fuzz -i <input_dir> -o <output_dir> -S <session_name>.NNN <afl_args> \
     #   </path/to/target.bin> <target_args>

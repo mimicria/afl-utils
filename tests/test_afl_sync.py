@@ -316,8 +316,8 @@ class AflSyncTestCase(unittest.TestCase):
         }
 
         expected_rsync_config = {
-            'get': ['-racz'],
-            'put': ['-racz', '--chmod=ABCD', '--protect-args', '--chown=EFGH']
+            'get': ['-raz'],
+            'put': ['-raz', '--chmod=ABCD', '--protect-args', '--chown=EFGH']
         }
 
         self.assertIsNone(afl_sync.main(argv))

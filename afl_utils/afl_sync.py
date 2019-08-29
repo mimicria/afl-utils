@@ -1,5 +1,5 @@
 """
-Copyright 2015-2018 @_rc0r <hlt99@blinkenshell.org>
+Copyright 2015-2019 @_rc0r <hlt99@blinkenshell.org>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@ import subprocess
 import afl_utils
 from afl_utils.AflPrettyPrint import clr, print_ok, print_warn, print_err
 
-_rsync_default_options = ['-racz']
+_rsync_default_options = ['-raz']
+
 
 class AflBaseSync(object):
     def __init__(self, server_config, fuzzer_config):
