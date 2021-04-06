@@ -8,15 +8,14 @@ cache:
     - .cache/pip
     - venv/
 
-before_script:
-  - apt-get -qq update
-  - apt-get install -y gdb rsync
-  - python -V
-  - pip install virtualenv
-  - virtualenv venv
-  - source venv/bin/activate
-
 job1:
+  before_script:
+    - apt-get -qq update
+    - apt-get install -y gdb rsync
+    - python -V
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
   script:
     - pip install pytest pytest-cov
     - python setup.py install
@@ -27,3 +26,10 @@ job1:
     - coverage run setup.py test
     - coverage report -m
   coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
+
+stages:
+  - test
+sast:
+  stage: test
+include:
+  - template: Security/SAST.gitlab-ci.yml
