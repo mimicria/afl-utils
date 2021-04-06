@@ -59,6 +59,20 @@ that `afl-collect` continues to run even if you happen to encounter some DoS con
 in the target. If you want to tweak this value use `-r` in conjunction with
 `-rt <timeout>` to specify the timeout in seconds.
 
+#### Note on ASAN-enabled targets
+
+In case `afl-collect` is used to collect crashes that  were  found using  targets with
+enabled ASAN the following `ASAN_OPTIONS` may be necessary  to reproduce crashes while
+using `afl-collect`:
+
+```bash
+ASAN_OPTIONS="abort_on_error=1:symbolize=0" afl-collect ...
+```
+
+The reason for that is that even if the ASAN-enabled binary aborts with some error its return
+code is zero. Since `afl-collect` uses the process return code to make a classifaction
+ASAN-crashes may not be detected without setting `abort_on_error=1`.
+
 ## afl-cron
 
 The purpose of `afl-cron` is to run different `afl-utils` tasks periodically. Example
