@@ -23,6 +23,7 @@ job1:
     - touch ~/.local/bin/afl-fuzz
     - chmod +x ~/.local/bin/afl-fuzz
     - export PATH=$PATH:~/.local/bin/
+    - pycodestyle afl_utils afl-collect afl-cron afl-minimize afl-multicore afl-multikill afl-stats afl-sync afl-vcrash
     - coverage run setup.py test
     - coverage report -m
   coverage: '/TOTAL.+ ([0-9]{1,3}%)/'

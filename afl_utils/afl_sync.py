@@ -130,7 +130,8 @@ class AflRsync(AflBaseSync):
 
 
 def show_info():
-    print(clr.CYA + 'afl-sync ' + clr.BRI + '{}'.format(afl_utils.__version__) + clr.RST + ' by {}'.format(afl_utils.__author__))
+    print(clr.CYA + 'afl-sync ' + clr.BRI + '{}'.format(afl_utils.__version__) + clr.RST +
+          ' by {}'.format(afl_utils.__author__))
     print('Synchronize fuzzer states with a remote location.')
     print('')
 
@@ -166,7 +167,7 @@ locations. Supported are remote transfers through rsync that may use transport c
     args = parser.parse_args(argv[1:])
 
     args.cmd = args.cmd.lower()
-    if not args.cmd in ['push', 'pull', 'sync']:
+    if args.cmd not in ['push', 'pull', 'sync']:
         print_err('Sorry, unknown command requested!')
         sys.exit(1)
 

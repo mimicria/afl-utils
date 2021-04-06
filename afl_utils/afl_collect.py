@@ -174,6 +174,7 @@ def generate_sample_list(list_filename, files_collected):
     except (FileExistsError, PermissionError):
         print_err("Could not create file list '%s'!" % list_filename)
 
+
 def stdin_mode(target_cmd):
     return not ("@@" in target_cmd)
 
@@ -211,7 +212,7 @@ def generate_gdb_exploitable_script(script_filename, sample_index, target_cmd, s
 
         # fill script with content
         for f in sample_index.index:
-            fd.writelines("echo Crash\ sample:\ '%s'\\n\n" % f['output'])
+            fd.writelines("echo Crash\ sample:\ '%s'\\n\n" % f['output'])   # noqa
 
             if not stdin_mode(target_cmd):
                 run_cmd = "run " + gdb_run_cmd + "\n"
@@ -335,8 +336,8 @@ def main(argv):
 
     parser = argparse.ArgumentParser(description="afl-collect copies all crash sample files from an afl sync dir used \
 by multiple fuzzers when fuzzing in parallel into a single location providing easy access for further crash analysis.",
-                                     usage="afl-collect [-d DATABASE] [-e|-g GDB_EXPL_SCRIPT_FILE] [-f LIST_FILENAME]\n \
-[-h] [-j THREADS] [-m] [-r [-rt TIMEOUT]] [-rr] sync_dir collection_dir -- target_cmd")
+                                     usage="afl-collect [-d DATABASE] [-e|-g GDB_EXPL_SCRIPT_FILE] [-f LIST_FILENAME]\n\
+ [-h] [-j THREADS] [-m] [-r [-rt TIMEOUT]] [-rr] sync_dir collection_dir -- target_cmd")
     parser.add_argument("sync_dir", help="afl synchronisation directory crash samples will be collected from.")
     parser.add_argument("collection_dir",
                         help="Output directory that will hold a copy of all crash samples and other generated files. \
@@ -421,7 +422,8 @@ Use '@@' to specify crash sample input file position (see afl-fuzz usage).")
     if args.remove_invalid:
         from afl_utils import afl_vcrash
         invalid_samples, timeout_samples = afl_vcrash.verify_samples(int(args.num_threads), sample_index.inputs(),
-                                                                     args.target_cmd, timeout_secs=float(args.remove_timeout))
+                                                                     args.target_cmd,
+                                                                     timeout_secs=float(args.remove_timeout))
 
         # store invalid samples in db
         if args.gdb_expl_script_file and db_file:

@@ -206,7 +206,7 @@ def build_slave_cmd(conf_settings, slave_index, target_cmd):
 
 
 def write_pgid_file(conf_settings):
-    if not "interactive" in conf_settings or not conf_settings["interactive"]:
+    if "interactive" not in conf_settings or not conf_settings["interactive"]:
         # write/append PGID to file /tmp/afl-multicore.PGID.<SESSION>
         f = open("/tmp/afl_multicore.PGID.%s" % conf_settings["session"], "a")
         if f.writable():
@@ -277,16 +277,16 @@ def auto_startup_delay(config_settings, instance_num, resume=True):
     #    O = 1 / sqrt(N)
     # This might need some tuning!
     if resume:
-        instance_dir = os.path.join(config_settings["output"], "{}{:03d}".format(config_settings["session"], instance_num),
-                                    "queue")
+        instance_dir = os.path.join(config_settings["output"], "{}{:03d}".format(config_settings["session"],
+                                                                                 instance_num), "queue")
     else:
         instance_dir = config_settings["input"]
     sample_list = os.listdir(instance_dir)
     N = len(sample_list)
     T = float(config_settings["timeout"].strip(" +")) if "timeout" in config_settings else 1000.0
-    O = N**(-1/2)
+    _O = N**(-1/2)
 
-    return O * T * N / 1000
+    return _O * T * N / 1000
 
 
 def main(argv):
@@ -301,8 +301,8 @@ in the background. For fuzzer stats see 'out_dir/SESSION###/fuzzer_stats'!",
     parser.add_argument("-s", "--startup-delay", dest="startup_delay", default=None, help="Wait a configurable  amount \
 of time after starting/resuming each afl instance to avoid interference during fuzzer startup. Provide wait time in \
 seconds.")
-    parser.add_argument("-t", "--test", dest="test_run", action="store_const", const=True, default=False, help="Perform \
-a test run by starting a single afl instance in interactive mode using a test output directory.")
+    parser.add_argument("-t", "--test", dest="test_run", action="store_const", const=True, default=False, help="Perform\
+ a test run by starting a single afl instance in interactive mode using a test output directory.")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_const", const=True,
                         default=False, help="For debugging purposes do not redirect stderr/stdout of the created \
 subprocesses to /dev/null (Default: off). Check 'nohup.out' for further outputs.")
