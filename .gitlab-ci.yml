@@ -17,7 +17,7 @@ job1:
     - virtualenv venv
     - source venv/bin/activate
   script:
-    - pip install pytest pytest-cov
+    - pip install pytest pytest-cov pycodestyle
     - python setup.py install
     - mkdir -p ~/.local/bin
     - touch ~/.local/bin/afl-fuzz
