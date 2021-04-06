@@ -11,6 +11,8 @@ Version 1.35a
     (Contributed by Philipp Bartsch.)
   - Updated `afl-sync` to not use the `-c` flag when invoking `rsync` to
     avoid hashing of large corpora. (Proposed by Denis Kasak.)
+  - Fixed an `UnboundLocalError` in `afl_stats.py` when attempting to parse
+    an empty stats file. (Contributed by Vincent Ulitzsch.)
 
 Version 1.34a
 

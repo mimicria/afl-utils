@@ -94,70 +94,72 @@ def fuzzer_alive(pid):
 
 
 def parse_stat_file(stat_file, summary=True):
+    summary_stats = {
+        'fuzzer_pid': None,
+        'execs_done': None,
+        'execs_per_sec': None,
+        'paths_total': None,
+        'paths_favored': None,
+        'pending_favs': None,
+        'pending_total': None,
+        'unique_crashes': None,
+        'unique_hangs': None,
+        'afl_banner': None
+    }
+
+    complete_stats = {
+        'last_update': '',
+        'start_time': '',
+        'fuzzer_pid': '',
+        'cycles_done': '',
+        'execs_done': '',
+        'execs_per_sec': '',
+        'paths_total': '',
+        'paths_favored': '',
+        'paths_found': '',
+        'paths_imported': '',
+        'max_depth': '',
+        'cur_path': '',
+        'pending_favs': '',
+        'pending_total': '',
+        'variable_paths': '',
+        'stability': '',
+        'bitmap_cvg': '',
+        'unique_crashes': '',
+        'unique_hangs': '',
+        'last_path': '',
+        'last_crash': '',
+        'last_hang': '',
+        'execs_since_crash': '',
+        'exec_timeout': '',
+        'afl_banner': '',
+        'afl_version': '',
+        'command_line': ''
+    }
+
+    stats = None
+
     try:
-        f = open(stat_file, "r")
-        lines = f.readlines()
-        f.close()
-
-        summary_stats = {
-            'fuzzer_pid': None,
-            'execs_done': None,
-            'execs_per_sec': None,
-            'paths_total': None,
-            'paths_favored': None,
-            'pending_favs': None,
-            'pending_total': None,
-            'unique_crashes': None,
-            'unique_hangs': None,
-            'afl_banner': None
-        }
-
-        complete_stats = {
-            'last_update': '',
-            'start_time': '',
-            'fuzzer_pid': '',
-            'cycles_done': '',
-            'execs_done': '',
-            'execs_per_sec': '',
-            'paths_total': '',
-            'paths_favored': '',
-            'paths_found': '',
-            'paths_imported': '',
-            'max_depth': '',
-            'cur_path': '',
-            'pending_favs': '',
-            'pending_total': '',
-            'variable_paths': '',
-            'stability': '',
-            'bitmap_cvg': '',
-            'unique_crashes': '',
-            'unique_hangs': '',
-            'last_path': '',
-            'last_crash': '',
-            'last_hang': '',
-            'execs_since_crash': '',
-            'exec_timeout': '',
-            'afl_banner': '',
-            'afl_version': '',
-            'command_line': ''
-        }
-
-        for l in lines:
-            if summary:
-                stats = summary_stats
-                for k in stats.keys():
-                    if k != "fuzzer_pid":
+        with open(stat_file, "r") as f:
+            lines = f.readlines()
+            for l in lines:
+                if summary:
+                    stats = summary_stats
+                    for k in stats.keys():
+                        if k != "fuzzer_pid":
+                            if k in l:
+                                stats[k] = l[19:].strip(": \r\n")
+                        else:
+                            if k in l:
+                                stats[k] = fuzzer_alive(int(l[19:].strip(": \r\n")))
+                else:
+                    stats = complete_stats
+                    for k in stats.keys():
                         if k in l:
-                            stats[k] = l[19:].strip(": \r\n")
-                    else:
-                        if k in l:
-                            stats[k] = fuzzer_alive(int(l[19:].strip(": \r\n")))
-            else:
-                stats = complete_stats
-                for k in stats.keys():
-                    if k in l:
-                        stats[k] = l[19:].strip(": %\r\n")
+                            stats[k] = l[19:].strip(": %\r\n")
 
+            if not stats:
+                print_warn("Stat file " + clr.GRA + "%s" % stat_file + clr.RST + " seems to be empty!")
         return stats
     except FileNotFoundError as e:
         print_warn("Stat file " + clr.GRA + "%s" % e.filename + clr.RST + " not found!")
