@@ -31,15 +31,20 @@ from db_connectors import con_sqlite
 
 
 db_table_spec = """`id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, `last_update` INTEGER NOT NULL,
-`start_time` INTEGER NOT NULL,
-`fuzzer_pid` INTEGER NOT NULL, `cycles_done` INTEGER NOT NULL, `execs_done` INTEGER NOT NULL,
-`execs_per_sec` REAL NOT NULL, `paths_total` INTEGER NOT NULL, `paths_favored` INTEGER NOT NULL,
-`paths_found` INTEGER NOT NULL, `paths_imported` INTEGER NOT NULL, `max_depth` INTEGER NOT NULL,
-`cur_path` INTEGER NOT NULL, `pending_favs` INTEGER NOT NULL, `pending_total` INTEGER NOT NULL,
-`variable_paths` INTEGER NOT NULL, `stability` REAL, `bitmap_cvg` REAL NOT NULL,
-`unique_crashes` INTEGER NOT NULL, `unique_hangs` INTEGER NOT NULL, `last_path` INTEGER NOT NULL,
+`start_time` INTEGER NOT NULL, `run_time` INTEGER NOT NULL,
+`fuzzer_pid` INTEGER NOT NULL, `cycles_done` INTEGER NOT NULL, `cycles_wo_finds` INTEGER NOT NULL,
+`execs_done` INTEGER NOT NULL, `execs_per_sec` REAL NOT NULL, `execs_ps_last_min` REAL NOT NULL,
+`corpus_count` INTEGER NOT NULL, `corpus_found` INTEGER NOT NULL, `corpus_favored` INTEGER NOT NULL,
+`corpus_variable` INTEGER NOT NULL, `corpus_imported` INTEGER NOT NULL, `max_depth` INTEGER NOT NULL,
+`cur_item` INTEGER NOT NULL, `pending_favs` INTEGER NOT NULL, `pending_total` INTEGER NOT NULL,
+`stability` REAL, `bitmap_cvg` REAL NOT NULL,
+`saved_crashes` INTEGER NOT NULL, `saved_hangs` INTEGER NOT NULL, `last_find` INTEGER NOT NULL,
 `last_crash` INTEGER NOT NULL, `last_hang` INTEGER NOT NULL, `execs_since_crash` INTEGER NOT NULL,
-`exec_timeout` INTEGER NOT NULL, `afl_banner` VARCHAR(200) NOT NULL, `afl_version` VARCHAR(10) NOT NULL,
+`exec_timeout` INTEGER NOT NULL, `slowest_exec_ms` INTEGER NOT NULL, `peak_rss_mb` INTEGER NOT NULL,
+`cpu_affinity` INTEGER NOT NULL, `edges_found` INTEGER NOT NULL, `total_edges` INTEGER NOT NULL,
+`var_byte_count` INTEGER NOT NULL, `havoc_expansion` INTEGER NOT NULL, `auto_dict_entries` INTEGER NOT NULL,
+`testcache_size` INTEGER NOT NULL, `testcache_count` INTEGER NOT NULL, `testcache_evict` INTEGER NOT NULL,
+`afl_banner` VARCHAR(200) NOT NULL, `afl_version` VARCHAR(10) NOT NULL, `target_mode` VARCHAR(200) NOT NULL,
 `command_line` VARCHAR(1000)"""
 
 
@@ -99,42 +104,57 @@ def parse_stat_file(stat_file, summary=True):
         'fuzzer_pid': None,
         'execs_done': None,
         'execs_per_sec': None,
-        'paths_total': None,
-        'paths_favored': None,
+        'corpus_count': None,
+        'corpus_favored': None,
         'pending_favs': None,
         'pending_total': None,
-        'unique_crashes': None,
-        'unique_hangs': None,
+        'saved_crashes': None,
+        'saved_hangs': None,
         'afl_banner': None
     }
 
     complete_stats = {
         'last_update': '',
         'start_time': '',
+        'run_time': '',
         'fuzzer_pid': '',
         'cycles_done': '',
+        'cycles_wo_finds': '',
         'execs_done': '',
         'execs_per_sec': '',
-        'paths_total': '',
-        'paths_favored': '',
-        'paths_found': '',
-        'paths_imported': '',
+        'execs_ps_last_min': '',
+        'corpus_count': '',
+        'corpus_favored': '',
+        'corpus_found': '',
+        'corpus_imported': '',
+        'corpus_variable': '',
         'max_depth': '',
-        'cur_path': '',
+        'cur_item': '',
         'pending_favs': '',
         'pending_total': '',
-        'variable_paths': '',
         'stability': '',
         'bitmap_cvg': '',
-        'unique_crashes': '',
-        'unique_hangs': '',
-        'last_path': '',
+        'saved_crashes': '',
+        'saved_hangs': '',
+        'last_find': '',
         'last_crash': '',
         'last_hang': '',
         'execs_since_crash': '',
         'exec_timeout': '',
+        'slowest_exec_ms': '',
+        'peak_rss_mb': '',
+        'cpu_affinity': '',
+        'edges_found': '',
+        'total_edges': '',
+        'var_byte_count': '',
+        'havoc_expansion': '',
+        'auto_dict_entries': '',
+        'testcache_size': '',
+        'testcache_count': '',
+        'testcache_evict': '',
         'afl_banner': '',
         'afl_version': '',
+        'target_mode': '',
         'command_line': ''
     }
 
@@ -202,12 +222,12 @@ def summarize_stats(stats):
             'fuzzer_pid': 0,
             'execs_done': 0,
             'execs_per_sec': 0,
-            'paths_total': 0,
-            'paths_favored': 0,
+            'corpus_count': 0,
+            'corpus_favored': 0,
             'pending_favs': 0,
             'pending_total': 0,
-            'unique_crashes': 0,
-            'unique_hangs': 0,
+            'saved_crashes': 0,
+            'saved_hangs': 0,
             'afl_banner': 0,
             'host': socket.gethostname()[:10]
         }
@@ -233,12 +253,12 @@ def diff_stats(sum_stats, old_stats):
             'fuzzer_pid': 0,
             'execs_done': 0,
             'execs_per_sec': 0,
-            'paths_total': 0,
-            'paths_favored': 0,
+            'corpus_count': 0,
+            'corpus_favored': 0,
             'pending_favs': 0,
             'pending_total': 0,
-            'unique_crashes': 0,
-            'unique_hangs': 0,
+            'saved_crashes': 0,
+            'saved_hangs': 0,
             'afl_banner': 0,
             'host': socket.gethostname()[:10]
         }
@@ -279,10 +299,10 @@ def prettify_stat(stat, dstat, console=True):
     else:
         ds_pend = " (%+d/%+d)" % (_dstat['pending_total'], _dstat['pending_favs'])
 
-    if _dstat['unique_crashes'] == 0:
+    if _dstat['saved_crashes'] == 0:
         ds_crash = ""
     else:
-        ds_crash = " (%+d)" % _dstat['unique_crashes']
+        ds_crash = " (%+d)" % _dstat['saved_crashes']
 
     if console:
         # colorize stats
@@ -296,7 +316,7 @@ def prettify_stat(stat, dstat, console=True):
         else:
             alc = clr.LGN if _stat['fuzzer_pid'] == _stat['fuzzers'] else clr.YEL
             slc = ""
-        clc = clr.MGN if _stat['unique_crashes'] == 0 else clr.LRD
+        clc = clr.MGN if _stat['saved_crashes'] == 0 else clr.LRD
         rst = clr.RST
 
         # colorize diffs
@@ -316,7 +336,7 @@ def prettify_stat(stat, dstat, console=True):
         else:
             ds_speed = clr.GRN + ds_speed + clr.RST
 
-        if _dstat['unique_crashes'] < 0:
+        if _dstat['saved_crashes'] < 0:
             ds_crash = clr.RED + ds_crash + clr.RST
         else:
             ds_crash = clr.GRN + ds_crash + clr.RST
@@ -330,13 +350,13 @@ def prettify_stat(stat, dstat, console=True):
                                         _stat['fuzzers'], rst, ds_alive, lbl, rst, _stat['execs_done'], ds_exec, lbl,
                                         rst, slc, _stat['execs_per_sec'], ds_speed, rst, lbl, rst,
                                         _stat['pending_total'], _stat['pending_favs'], ds_pend, lbl, rst, clc,
-                                        _stat['unique_crashes'], rst, ds_crash)
+                                        _stat['saved_crashes'], rst, ds_crash)
     else:
         pretty_stat = "[%s #%s]\nAlive: %d/%d%s\nExecs: %d%sm\nSpeed: %.1f%sx/s\n" \
                       "Pend: %d/%d%s\nCrashes: %d%s" %\
                       (_stat['afl_banner'], _stat['host'], _stat['fuzzer_pid'], _stat['fuzzers'], ds_alive,
                        _stat['execs_done'], ds_exec, _stat['execs_per_sec'], ds_speed,
-                       _stat['pending_total'], _stat['pending_favs'], ds_pend, _stat['unique_crashes'], ds_crash)
+                       _stat['pending_total'], _stat['pending_favs'], ds_pend, _stat['saved_crashes'], ds_crash)
     return pretty_stat
 
 

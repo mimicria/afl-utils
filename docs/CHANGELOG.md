@@ -1,5 +1,9 @@
 # afl-utils Changelog
 
+Version 1.36a
+
+  - Updated `afl-stats` to support all `fuzzer_stats` entries of `afl++4.01a`.
+
 Version 1.35a
 
   - Changed `afl-multicore` to prefix filenames with their respective job
