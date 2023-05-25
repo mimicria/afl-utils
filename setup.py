@@ -26,7 +26,7 @@ dependencies = [
 ]
 
 dependency_links = [
-    'https://gitlab.com/rc0r/exploitable/-/archive/experimental/exploitable-experimental.tar.gz#egg=exploitable+1.32-rcor'
+    'https://gitlab.com/rc0r/exploitable/-/archive/experimental/exploitable-experimental.tar.gz#egg=exploitable-1.32+rcor'
 ]
 
 afl_scripts = [
