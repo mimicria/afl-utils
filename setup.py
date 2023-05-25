@@ -20,13 +20,13 @@ from setuptools import find_packages
 import afl_utils
 
 dependencies = [
-    'exploitable==1.32-rcor',       # needed for gdb script execution
+    'exploitable==1.32+rcor',       # needed for gdb script execution
     'simplejson',                   # needed for config files
     'twitter',                      # needed for afl-stats (twitter access)
 ]
 
 dependency_links = [
-    'https://gitlab.com/rc0r/exploitable/-/archive/experimental/exploitable-experimental.tar.gz#egg=exploitable-1.32-rcor'
+    'https://gitlab.com/rc0r/exploitable/-/archive/experimental/exploitable-experimental.tar.gz#egg=exploitable+1.32-rcor'
 ]
 
 afl_scripts = [
